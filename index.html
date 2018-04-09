@@ -136,13 +136,29 @@
 				var currHours = Math.floor(currMinutes / 60);
 				currMinutes = currMinutes % 60;
 				
+				// display "1 hour/minute/second" instead of "1 hours/minutes/seconds"
+				var oldHourText, currHourText;
+				oldHourText = currHourText = " hours, ";
+				if (beforeHours == 1) oldHourText = " hour, ";
+				if (currHours == 1) currHourText = " hour, ";
+				var oldMinuteText, currMinuteText;
+				oldMinuteText = currMinuteText = " minutes, and ";
+				if (beforeMinutes == 1) oldMinuteText = " minute, and ";
+				if (currMinutes == 1) currMinuteText = " minute, and ";
+				var oldSecondText, currSecondText;
+				oldSecondText = currSecondText = " seconds";
+				if (beforeSeconds == 1) oldSecondText = " second";
+				if (currSeconds == 1) currSecondText = " second";
+				
 				// update html page to reflect elapsed time
 				if (start_time == oldest_time) {
 					j('#oldest-text').text("You are the oldest person on this page.");
 				} else {
-					j('#oldest-time').text(beforeHours + " hours, " + beforeMinutes + " minutes, and " + beforeSeconds + " seconds");
+					// j('#oldest-time').text(beforeHours + " hours, " + beforeMinutes + " minutes, and " + beforeSeconds + " seconds");
+					j('#oldest-time').text(beforeHours + oldHourText + beforeMinutes + oldMinuteText + beforeSeconds + oldSecondText);
 				}
-				j('#elapsed-time').text(currHours + " hours, " + currMinutes + " minutes, and " + currSeconds + " seconds");
+				// j('#elapsed-time').text(currHours + " hours, " + currMinutes + " minutes, and " + currSeconds + " seconds");
+				j('#elapsed-time').text(currHours + currHourText + currMinutes + currMinuteText + currSeconds + currSecondText);
 			
 			}, 1000); // update page every second
 		});
