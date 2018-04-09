@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <head>
-  <title>ARTS 445 #7: Interact</title>
-
-  <style>
-    body {
-      font-size:180%;
-      font-family:"Open Sans";
+	<title>ARTS 445 #7: Interact</title>
+	<style>
+		body {
+			font-size:180%;
+			font-family:"Open Sans";
 		}
 		.text {
 			position: fixed;
-  		top: 50%;
-  		left: 50%;
-  		transform: translate(-50%, -50%);	
+  			top: 50%;
+  			left: 50%;
+  			transform: translate(-50%, -50%);	
 			text-align: center;
 		}
 		#oldest-text {
@@ -34,11 +33,10 @@
 			font-family: "Courier";
 			font-weight: bold;
 		}
-  </style>
-
-  <!-- load firebase and jquery code -->
-  <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	</style>
+	<!-- load firebase and jquery code -->
+	<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -89,9 +87,9 @@
 			// extract oldest user key from snap.val() object 
 			var items = [];
 			snapshot.forEach((child) => {
-    			items.push({
-      				_key: child.key,
-    			});
+    				items.push({
+      					_key: child.key,
+    				});
   			});
 			
 			var uKey = items[0]._key;
@@ -117,7 +115,7 @@
 					first = false;	// only add user once
 				}
 				
-      			// get current time of machine
+      				// get current time of machine
 				var currTime = new Date(j.now());
 				
 				// calculate difference between oldest start and start of current page
