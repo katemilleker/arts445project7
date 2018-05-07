@@ -4,16 +4,21 @@
 	<style>
 		body {
 			font-size:180%;
-			font-family:"Open Sans";
+			font-family:"Helvetica";
+			color: black;
+			font-family: "Helvetica";
+			font-weight: bold;
 		}
 		.text {
 			position: fixed;
-  			top: 50%;
-  			left: 50%;
-  			transform: translate(-50%, -50%);	
+			width: 75%;
+  		top: 50%;
+  		left: 50%;
+  		transform: translate(-50%, -50%);	
 			text-align: center;
+			font-size: 25px;
 		}
-		#oldest-text {
+/*		#oldest-text {
 			color: black;
 			font-family: "Helvetica";
 			font-weight: bold;
@@ -22,16 +27,18 @@
 			color: black;
 			font-family: "Helvetica";
 			font-weight: bold;
-		}
+		}*/
 		#oldest-time {
 			color: #8B0000;
-			font-family: "Courier";
-			font-weight: bold;
+			/*font-family: "Courier";*/
+			/*font-family: "Helvetica";
+			font-weight: bold;*/
 		}
 		#elapsed-time {
 			color: #8FBC8F;
-			font-family: "Courier";
-			font-weight: bold;
+			/*font-family: "Courier";*/
+			/*font-family: "Helvetica";
+			font-weight: bold;*/
 		}
 	</style>
 	<!-- load firebase and jquery code -->
@@ -45,7 +52,7 @@
 		
 		// TODO: numUsers decreases but users don't delete
 		// TODO: user can exist but not be active (laptop close, etc)
-		// TODO: change title, "oldest" wording
+		// TODO: don't let numUsers go under 0
 		
 		var j = jQuery.noConflict();
 
@@ -91,10 +98,10 @@
 			// extract oldest user key from snap.val() object 
 			var items = [];
 			snapshot.forEach((child) => {
-    				items.push({
-      					_key: child.key,
-    				});
-  			});
+    		items.push({
+      		_key: child.key,
+    		});
+  		});
 			
 			var uKey = items[0]._key;
 			var startVal = snapshot.child(uKey + '/startedAt').val();		// start time of oldest
@@ -107,6 +114,7 @@
 		// read oldest time data from database, save it locally
 		oldestTime.on('value', function(snapshot) { oldest_time = snapshot.val(); });
 		
+		var pageActive = true;		// determines if a user ever leaves the page
 		// runs when page is fully loaded
 		j(document).ready(function() {		
 			
@@ -117,51 +125,65 @@
 					// add user to the database
 					numUsers.set(num_users + 1);
 					first = false;	// only add user once
+					pageActive = true;
 				}
 				
-      				// get current time of machine
-				var currTime = new Date(j.now());
-				
-				// calculate difference between oldest start and start of current page
-				var difference = Math.abs(new Date(start_time) - new Date(oldest_time));
-				var beforeSeconds = Math.floor(difference / 1000);
-				var beforeMinutes = Math.floor(beforeSeconds / 60);
-				beforeSeconds = beforeSeconds % 60;
-				var beforeHours = Math.floor(beforeMinutes / 60);
-				beforeMinutes = beforeMinutes % 60;
-				
-				// calculate duration of time on the current page
-				var duration =  Math.abs(new Date(currTime) - new Date(start_time));
-				var currSeconds = Math.floor(duration / 1000); 
-				var currMinutes = Math.floor(currSeconds / 60); 
-				currSeconds = currSeconds % 60;
-				var currHours = Math.floor(currMinutes / 60);
-				currMinutes = currMinutes % 60;
-				
-				// display "1 hour/minute/second" instead of "1 hours/minutes/seconds"
-				var oldHourText, currHourText;
-				oldHourText = currHourText = " hours, ";
-				if (beforeHours == 1) oldHourText = " hour, ";
-				if (currHours == 1) currHourText = " hour, ";
-				var oldMinuteText, currMinuteText;
-				oldMinuteText = currMinuteText = " minutes, and ";
-				if (beforeMinutes == 1) oldMinuteText = " minute, and ";
-				if (currMinutes == 1) currMinuteText = " minute, and ";
-				var oldSecondText, currSecondText;
-				oldSecondText = currSecondText = " seconds";
-				if (beforeSeconds == 1) oldSecondText = " second";
-				if (currSeconds == 1) currSecondText = " second";
-				
-				// update html page to reflect elapsed time
-				if (start_time == oldest_time) {
-					j('#oldest-text').text("You are the oldest person on this page.");
-				} else {
-					// j('#oldest-time').text(beforeHours + " hours, " + beforeMinutes + " minutes, and " + beforeSeconds + " seconds");
-					j('#oldest-time').text(beforeHours + oldHourText + beforeMinutes + oldMinuteText + beforeSeconds + oldSecondText);
+				// only update if the user hasn't left the page
+				if (pageActive) {		
+					// get current time of machine
+					var currTime = new Date(j.now());
+
+					// calculate difference between oldest start and start of current page
+					var difference = Math.abs(new Date(start_time) - new Date(oldest_time));
+					var beforeSeconds = Math.floor(difference / 1000);
+					var beforeMinutes = Math.floor(beforeSeconds / 60);
+					beforeSeconds = beforeSeconds % 60;
+					var beforeHours = Math.floor(beforeMinutes / 60);
+					beforeMinutes = beforeMinutes % 60;
+
+					// calculate duration of time on the current page
+					var duration =  Math.abs(new Date(currTime) - new Date(start_time));
+					var currSeconds = Math.floor(duration / 1000); 
+					var currMinutes = Math.floor(currSeconds / 60); 
+					currSeconds = currSeconds % 60;
+					var currHours = Math.floor(currMinutes / 60);
+					currMinutes = currMinutes % 60;
+
+					// display "1 hour/minute/second" instead of "1 hours/minutes/seconds"
+					var oldHourText, currHourText;
+					oldHourText = currHourText = " hours";
+					if (beforeHours == 1) oldHourText = " hour";
+					if (currHours == 1) currHourText = " hour";
+					var oldMinuteText, currMinuteText;
+					oldMinuteText = currMinuteText = " minutes";
+					if (beforeMinutes == 1) oldMinuteText = " minute";
+					if (currMinutes == 1) currMinuteText = " minute";
+					var oldSecondText, currSecondText;
+					oldSecondText = currSecondText = " seconds";
+					if (beforeSeconds == 1) oldSecondText = " second";
+					if (currSeconds == 1) currSecondText = " second";
+
+					// update html page to reflect elapsed time
+					if (start_time == oldest_time) {
+						// current user has stayed on this page the longest
+						j('#oldest-text').html("You've stayed longer than anyone else on this page.");
+					} else {
+						if (beforeHours == 0) {
+							if (beforeMinutes == 0 ) {
+								// don't display 0h 0m, only display seconds since first person arrived
+								j('#oldest-time').text(beforeSeconds + " " + oldSecondText);
+							} else {
+								// dont diplay 0h, only display minutes and seconds since first person arrived
+								j('#oldest-time').text(beforeMinutes + oldMinuteText + " and "+ beforeSeconds + oldSecondText);
+							}
+						} else {
+							// display all hours minutes seconds since first person arrived
+							j('#oldest-time').text(beforeHours + oldHourText + ", " + beforeMinutes + oldMinuteText + ", and " + beforeSeconds + oldSecondText);
+						}
+					}
+					// display all hours minutes seconds that current user has been on the page
+					j('#elapsed-time').text(currHours + currHourText + ", " + currMinutes + currMinuteText + ", and " + currSeconds + currSecondText);
 				}
-				// j('#elapsed-time').text(currHours + " hours, " + currMinutes + " minutes, and " + currSeconds + " seconds");
-				j('#elapsed-time').text(currHours + currHourText + currMinutes + currMinuteText + currSeconds + currSecondText);
-			
 			}, 1000); // update page every second
 		});
 
@@ -171,14 +193,29 @@
 			db.ref('users/' + userKey).remove();
 			// If last user is deleted, reset oldestTime to 0
 			numUsers.set(num_users - 1);
-			if (num_users == 0) oldestTime.set(0);
+			if (num_users == 0) 
+				oldestTime.set(0);
+		});
+		
+		// user has navigated away from the page/tab
+		j(window).on("visibilitychange", function() {
+			// UI informs inactive user when they navigate back to the page
+			j('.text').html("<p>You have left the page and are now inactive.</p><p>Please refresh the page.</p>");
+			pageActive = false;		// stop any more UI updates or calculations
+			
+			// delete current user from Firebase
+			db.ref('users/' + userKey).remove();
+			// If last user is deleted, reset oldestTime to 0
+			numUsers.set(num_users - 1);
+			if (num_users == 0)
+				oldestTime.set(0);
 		});
 
 	</script>
 	
 	<div class="text">
-		<p id="oldest-text">The oldest person on this page has been here<br><span class="time" id="oldest-time">... loading ...</span><br>longer than you.</p>
-		<p id="elapsed-text">You've been on this page for<br><span class="time" id="elapsed-time">... loading ...</span>.</p>
+		<p id="oldest-text">The first person to stay on this page arrived<br><span class="time" id="oldest-time">... loading ...</span>  before you.</p>
+		<p id="elapsed-text"><br/>You've been on this page for<br><span class="time" id="elapsed-time">... loading ...</span>.</p>
 	</div>
 	
 </body>
