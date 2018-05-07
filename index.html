@@ -3,7 +3,7 @@
 	<title>ARTS 445 #7: Interact</title>
 	<style>
 		body {
-			font-size:180%;
+			font-size:25px;
 			font-family:"Helvetica";
 			color: black;
 			font-family: "Helvetica";
@@ -11,12 +11,11 @@
 		}
 		.text {
 			position: fixed;
-			width: 75%;
+			width: 50%;
   		top: 50%;
   		left: 50%;
   		transform: translate(-50%, -50%);	
 			text-align: center;
-			font-size: 25px;
 		}
 /*		#oldest-text {
 			color: black;
@@ -207,7 +206,7 @@
 		});
 		
 		// user has navigated away from the page/tab
-		j(window).on("visibilitychange", function() {
+		/*j(window).on("visibilitychange", function() {
 			// UI informs inactive user when they navigate back to the page
 			j('.text').html("<p>You have left the page and are now inactive.</p><p>Please refresh the page.</p>");
 			pageActive = false;		// stop any more UI updates or calculations
@@ -225,7 +224,7 @@
 				// don't let the same user be deleted multiple times
 				alreadyDeleted = true;
 			}
-		});
+		});*/
 
 	</script>
 	
