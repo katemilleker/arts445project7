@@ -115,6 +115,7 @@
 		oldestTime.on('value', function(snapshot) { oldest_time = snapshot.val(); });
 		
 		var pageActive = true;		// determines if a user ever leaves the page
+		var alreadyDeleted = false; 	// determines if program has already processed delete user
 		// runs when page is fully loaded
 		j(document).ready(function() {		
 			
@@ -126,6 +127,7 @@
 					numUsers.set(num_users + 1);
 					first = false;	// only add user once
 					pageActive = true;
+					alreadyDeleted = false;
 				}
 				
 				// only update if the user hasn't left the page
@@ -188,13 +190,20 @@
 		});
 
 		// handle window close/refresh event
-		j(window).on("beforeunload", function() {		 
-			// delete current user from Firebase
-			db.ref('users/' + userKey).remove();
-			// If last user is deleted, reset oldestTime to 0
-			numUsers.set(num_users - 1);
-			if (num_users == 0) 
-				oldestTime.set(0);
+		j(window).on("beforeunload", function() {		
+			// if delete hasn't already been done by visibility change
+			if (!alreadyDeleted) {
+				// delete current user from Firebase
+				db.ref('users/' + userKey).remove();
+				// If last user is deleted, reset oldestTime to 0
+				numUsers.set(num_users - 1);
+				if (num_users <= 0) {
+					oldestTime.set(0);
+					numUsers.set(0);
+				}
+				// don't let the same user be deleted multiple times
+				alreadyDeleted = true;
+			}
 		});
 		
 		// user has navigated away from the page/tab
@@ -203,12 +212,19 @@
 			j('.text').html("<p>You have left the page and are now inactive.</p><p>Please refresh the page.</p>");
 			pageActive = false;		// stop any more UI updates or calculations
 			
-			// delete current user from Firebase
-			db.ref('users/' + userKey).remove();
-			// If last user is deleted, reset oldestTime to 0
-			numUsers.set(num_users - 1);
-			if (num_users == 0)
-				oldestTime.set(0);
+			// if delete hasn't already been done by page close
+			if (!alreadyDeleted) {
+				// delete current user from Firebase
+				db.ref('users/' + userKey).remove();
+				// If last user is deleted, reset oldestTime to 0
+				numUsers.set(num_users - 1);
+				if (num_users <= 0) {
+					oldestTime.set(0);
+					numUsers.set(0);
+				}
+				// don't let the same user be deleted multiple times
+				alreadyDeleted = true;
+			}
 		});
 
 	</script>
